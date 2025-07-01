@@ -36,7 +36,9 @@ class IntegerRange:
         if not isinstance(value, int):
             raise TypeError(f"{self.private_name} must be an int")
         if not (self.min_amount <= value <= self.max_amount):
-            raise ValueError(f"{self.private_name} must be between {self.min_amount} and {self.max_amount}")
+            raise ValueError(
+                f"{self.private_name} must be between {self.min_amount} and {self.max_amount}"
+            )
         setattr(instance, self.private_name, value)  # type: ignore
 
 
@@ -111,7 +113,7 @@ class Slide:
             validator = self.limitation_class(
                 age=visitor.age,
                 weight=visitor.weight,
-                height=visitor.height
+                height=visitor.height,
             )
             validator.validate()
         except (TypeError, ValueError):
