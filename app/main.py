@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Type
 
 
@@ -34,9 +34,9 @@ class IntegerRange:
         value: int
     ) -> None:
         if not isinstance(value, int):
-            raise TypeError
+            raise TypeError(f"{self.private_name} must be an int")
         if not (self.min_amount <= value <= self.max_amount):
-            raise ValueError
+            raise ValueError(f"{self.private_name} must be between {self.min_amount} and {self.max_amount}")
         setattr(instance, self.private_name, value)  # type: ignore
 
 
@@ -65,17 +65,33 @@ class SlideLimitationValidator(ABC):
         self.weight = weight
         self.height = height
 
+    @abstractmethod
+    def validate(self) -> None:
+        """Perform validation checks for the slide limitation."""
+        pass
+
 
 class ChildrenSlideLimitationValidator(SlideLimitationValidator):
     age = IntegerRange(4, 14)
     height = IntegerRange(80, 120)
     weight = IntegerRange(20, 50)
 
+    def validate(self) -> None:
+        # Simply accessing attributes triggers descriptor validation
+        _ = self.age
+        _ = self.height
+        _ = self.weight
+
 
 class AdultSlideLimitationValidator(SlideLimitationValidator):
     age = IntegerRange(14, 60)
     height = IntegerRange(120, 220)
     weight = IntegerRange(50, 120)
+
+    def validate(self) -> None:
+        _ = self.age
+        _ = self.height
+        _ = self.weight
 
 
 class Slide:
@@ -92,11 +108,12 @@ class Slide:
         visitor: Visitor
     ) -> bool:
         try:
-            self.limitation_class(
+            validator = self.limitation_class(
                 age=visitor.age,
                 weight=visitor.weight,
                 height=visitor.height
             )
+            validator.validate()
         except (TypeError, ValueError):
             return False
         return True
