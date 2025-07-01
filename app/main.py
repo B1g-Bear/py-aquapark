@@ -37,7 +37,8 @@ class IntegerRange:
             raise TypeError(f"{self.private_name} must be an int")
         if not (self.min_amount <= value <= self.max_amount):
             raise ValueError(
-                f"{self.private_name} must be between {self.min_amount} and {self.max_amount}"
+                f"{self.private_name} must be between "
+                f"{self.min_amount} and {self.max_amount}"
             )
         setattr(instance, self.private_name, value)  # type: ignore
 
@@ -79,7 +80,6 @@ class ChildrenSlideLimitationValidator(SlideLimitationValidator):
     weight = IntegerRange(20, 50)
 
     def validate(self) -> None:
-        # Simply accessing attributes triggers descriptor validation
         _ = self.age
         _ = self.height
         _ = self.weight
